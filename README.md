@@ -1,127 +1,137 @@
-![Tests](https://github.com/rafterkode/mypdfrag/actions/workflows/tests.yml/badge.svg)
 <div align="center">
 
-![mypdfrag](assets/images/LocalPDFRAG.png)
+<img src="assets/images/mypdfrag.png" width="180" alt="mypdfrag logo">
 
 # mypdfrag
 
-**A lightweight, local-first Retrieval-Augmented Generation (RAG) application for querying PDF documents using locally hosted language models.**
+### Local-first PDF Intelligence. Simple, Lightweight, Private.
 
-mypdfrag is a personal document assistant built with Python, Ollama, ChromaDB, and FastAPI.
+[![Tests](https://github.com/rafterkode/mypdfrag/actions/workflows/tests.yml/badge.svg)](https://github.com/rafterkode/mypdfrag/actions/workflows/tests.yml)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-005571?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Ollama](https://img.shields.io/badge/Ollama-Local%20LLM-black?logo=ollama&logoColor=white)](https://ollama.com/)
+[![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector%20Database-orange)](https://www.trychroma.com/)
+[![Platform](https://img.shields.io/badge/Platform-Linux-lightgrey?logo=linux&logoColor=black)](https://www.linux.org/)
+[![GitHub last commit](https://img.shields.io/github/last-commit/rafterkode/mypdfrag)](https://github.com/rafterkode/mypdfrag/commits/main)
 
-It extracts text from PDF documents, generates embeddings, stores vector representations, and retrieves relevant content to generate context-aware answers using a locally running Large Language Model (LLM).
+A lightweight Retrieval-Augmented Generation (RAG) application for querying PDF documents using locally hosted language models.
 
-The main goal is to provide a fully local document assistant with limited hardware resource requirements, without relying on external LLM APIs.
+[Features](#features) · [Architecture](#architecture) · [Installation](#installation) · [Usage](#usage)
+
+</div>
 
 ---
+
+## Overview
+
+**mypdfrag** is a personal document assistant built with Python, Ollama, ChromaDB, and FastAPI.
+
+It transforms PDF documents into a searchable knowledge base and uses locally hosted language models to generate context-aware answers with source references.
+
+**Designed around three principles:**
+
+- **Local-first:** Documents, embeddings, and queries stay on your machine.
+- **Lightweight:** Designed to operate with modest hardware and without a dedicated GPU.
+- **Private:** No external LLM API required.
+
+## Features
+
+| Feature | Description |
+|:--|:--|
+| PDF Ingestion | Extract and process PDF documents using PyMuPDF |
+| Semantic Search | Retrieve relevant content using vector similarity |
+| Local Embeddings | Generate embeddings with EmbeddingGemma |
+| Local AI | Generate answers using Qwen 2.5 |
+| Source References | Return document names and corresponding page numbers |
+| REST API | Access the application through FastAPI |
+| Persistent Storage | Store document embeddings in ChromaDB |
 
 ## Commercial Version
 
-Need a ready-to-use Windows/Mac version with a graphical interface ?
+Looking for a ready-to-use Windows/macOS version with a graphical interface?
 
-Check out the **full version** on Gumroad.
+Check out the **full version on Gumroad**.
 
-> The open-source version (this repository) is fully functional. The commercial version adds convenience features for non-developer users.
+> The open-source version is fully functional. The commercial version adds convenience features for non-developer users.
 
 ---
 
-## 1. Technical Architecture
+## Architecture
+
+mypdfrag uses a straightforward Retrieval-Augmented Generation pipeline.
 
 ### Technology Stack
 
-| Component | Technology | Purpose |
-| --- | --- | --- |
-| LLM Runtime | Ollama | Local model execution |
-| Language Model | Qwen 2.5 1.5B | Answer generation |
-| Embedding Model | EmbeddingGemma 300M QAT Q4_0 | Text vectorization |
-| PDF Extraction | PyMuPDF | PDF text extraction |
-| Vector Database | ChromaDB | Vector storage and semantic search |
-| API Framework | FastAPI | REST API endpoints |
+| Component | Technology |
+|:--|:--|
+| LLM Runtime | Ollama |
+| Language Model | Qwen 2.5 1.5B |
+| Embedding Model | EmbeddingGemma 300M QAT Q4_0 |
+| PDF Extraction | PyMuPDF |
+| Vector Database | ChromaDB |
+| API Framework | FastAPI |
 
 ### RAG Pipeline
 
-```text
-                  PDF DOCUMENTS
-                       |
-                       v
-                  TEXT EXTRACTION
-                     PyMuPDF
-                       |
-                       v
-                   TEXT CHUNKING
-                       |
-                       v
-                    EMBEDDINGS
-              EmbeddingGemma 300M
-                       |
-                       v
-                    CHROMADB
-                  Vector Database
+```mermaid
+flowchart TB
+    subgraph INGESTION["DOCUMENT INGESTION"]
+        PDF["PDF Documents"] --> EXTRACT["Text Extraction<br/>PyMuPDF"]
+        EXTRACT --> CHUNK["Text Chunking"]
+        CHUNK --> EMBED["Embedding Generation<br/>EmbeddingGemma"]
+        EMBED --> DB[("ChromaDB<br/>Vector Database")]
+    end
 
-USER QUESTION
-      |
-      v
-QUESTION EMBEDDING
-      |
-      v
-SEMANTIC SEARCH <--------- CHROMADB
-      |
-      v
-RELEVANT CONTEXT
-      |
-      v
-OLLAMA / QWEN 2.5
-      |
-      v
-GENERATED ANSWER
-      |
-      v
-ANSWER WITH SOURCE REFERENCES
+    subgraph QUERY["QUESTION & ANSWER"]
+        USER["User Question"] --> QEMBED["Question Embedding"]
+        QEMBED --> SEARCH["Semantic Search"]
+        DB --> SEARCH
+        SEARCH --> CONTEXT["Relevant Context"]
+        CONTEXT --> LLM["Ollama / Qwen 2.5"]
+        LLM --> ANSWER["Generated Answer"]
+        ANSWER --> SOURCES["Answer + Source References"]
+    end
+
+    style DB fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style LLM fill:#7c3aed,color:#fff,stroke:#6d28d9
+    style SOURCES fill:#15803d,color:#fff,stroke:#166534
 ```
 
 ### Main Components
 
 - **Ingestion:** Extracts, chunks, and indexes PDF content.
-
 - **Embeddings:** Converts text into vector representations.
-
 - **Retrieval:** Finds relevant document chunks using semantic similarity.
-
-- **Generation:** Uses the retrieved context to generate answers.
-
+- **Generation:** Uses retrieved context to generate answers.
 - **API:** Exposes the application through a local REST API.
 
 ---
 
-## 2. System Requirements
+## System Requirements
 
-### Target Hardware
+### Hardware
 
-The application is designed to run on relatively modest hardware.
+Designed to run on relatively modest hardware.
 
-- Linux (Ubuntu / Debian).
+| Resource | Requirement |
+|:--|:--|
+| CPU | 4–8 cores |
+| RAM | 8 GB |
+| GPU | Not required |
+| Operating System | Linux (Ubuntu / Debian) |
 
-- 4 to 8 CPU cores.
+### Software
 
-- 8 GB RAM.
-
-- No dedicated GPU required.
-
-### Software Requirements
-
-- Python 3.10 or higher.
-
-- pip.
-
-- Python venv.
-
-- Ollama.
+- Python 3.10+
+- pip
+- Python venv
+- Ollama
 
 ---
 
-## 3. Installation
+## Installation
 
-### Install Ollama
+### 1. Install Ollama
 
 ```bash
 curl -fsSL https://ollama.com/install.sh | sh
@@ -134,15 +144,15 @@ ollama --version
 systemctl status ollama
 ```
 
-### Download the Models
+### 2. Download the Models
 
-Language model:
+**Language model:**
 
 ```bash
 ollama pull qwen2.5:1.5b
 ```
 
-Embedding model:
+**Embedding model:**
 
 ```bash
 ollama pull embeddinggemma:300m-qat-q4_0
@@ -150,7 +160,7 @@ ollama pull embeddinggemma:300m-qat-q4_0
 
 Both models are downloaded and executed locally through Ollama.
 
-### Configure Ollama for Limited Resource Usage
+### 3. Configure Ollama for Limited Resources
 
 Create a systemd override:
 
@@ -168,7 +178,7 @@ Environment="OLLAMA_CONTEXT_LENGTH=2048"
 Environment="OLLAMA_KEEP_ALIVE=0"
 ```
 
-Restart the service:
+Restart Ollama:
 
 ```bash
 sudo systemctl daemon-reload
@@ -177,31 +187,27 @@ sudo systemctl restart ollama
 
 This configuration prioritizes sequential model execution to reduce memory consumption.
 
----
-
-## 4. Project Setup
-
-Clone the repository:
+### 4. Clone the Repository
 
 ```bash
-git clone <REPOSITORY_URL>
+git clone https://github.com/rafterkode/mypdfrag.git
 cd mypdfrag
 ```
 
-Create and activate a virtual environment:
+### 5. Create a Virtual Environment
 
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 ```
 
-Install the Python dependencies:
+### 6. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Python Dependencies
+**Main Python dependencies:**
 
 ```text
 fastapi
@@ -213,7 +219,7 @@ requests
 
 ---
 
-## 5. Project Structure
+## Project Structure
 
 ```text
 mypdfrag/
@@ -228,28 +234,27 @@ mypdfrag/
 │   ├── ingest.py
 │   └── api.py
 │
-|── tests/
+├── tests/
 ├── requirements.txt
 ├── .env.example
 ├── README.md
 └── .gitignore
 ```
 
-### Directory Description
-
 | Path | Description |
-| --- | --- |
+|:--|:--|
 | `documents/` | PDF documents to be indexed |
-| `database/` | Persistent ChromaDB vector storage |
+| `database/` | Persistent ChromaDB storage |
 | `app/ingest.py` | PDF extraction, chunking, and indexing |
 | `app/api.py` | Search and answer generation API |
+| `tests/` | Automated tests |
 | `requirements.txt` | Python dependencies |
 
 ---
 
-## 6. Usage
+## Usage
 
-### Add PDF Documents
+### 1. Add PDF Documents
 
 Place your PDF files inside:
 
@@ -259,53 +264,42 @@ documents/
 
 PDF files containing selectable text can be processed directly.
 
-Scanned PDFs require an additional OCR step, which is not included in the current version.
+> Scanned PDFs require an additional OCR step, which is not included in the current version.
 
-### Index Documents
+### 2. Index Documents
 
-From the project root directory, run:
+From the project root directory:
 
 ```bash
 python app/ingest.py
 ```
 
-The ingestion process performs the following operations:
+The ingestion process:
 
 1. Reads PDF documents.
-
 2. Extracts text using PyMuPDF.
-
-3. Splits the extracted text into chunks.
-
+3. Splits extracted text into chunks.
 4. Generates embeddings using Ollama.
-
 5. Stores vectors and associated metadata in ChromaDB.
 
-Indexing only needs to be performed when new documents are added or existing documents are modified.
+Indexing only needs to be performed when documents are added or modified.
 
-### Start the API
-
-Run the FastAPI application:
+### 3. Start the API
 
 ```bash
 uvicorn app.api:app --host 127.0.0.1 --port 8181
 ```
 
-The API is available locally at:
+The API is now available locally.
 
-```text
-http://127.0.0.1:8181
-```
-
-Interactive API documentation:
-
-```text
-http://127.0.0.1:8181/docs
-```
+| Resource | URL |
+|:--|:--|
+| API | http://127.0.0.1:8181 |
+| Interactive documentation | http://127.0.0.1:8181/docs |
 
 ---
 
-## 7. Querying Documents
+## Querying Documents
 
 ### API Endpoint
 
@@ -329,7 +323,7 @@ curl -X POST http://127.0.0.1:8181/ask \
   -d "$(jq -n --arg question "$QUESTION" '{question: $question}')"
 ```
 
-Alternatively, replace the question directly in the JSON payload:
+Alternatively, send the question directly:
 
 ```bash
 curl -X POST http://127.0.0.1:8181/ask \
@@ -344,40 +338,32 @@ curl -X POST http://127.0.0.1:8181/ask \
 The API returns:
 
 - The original question.
-
 - The generated answer.
-
 - The source documents used to generate the answer.
-
 - The corresponding page numbers.
 
-Answers are generated using the document chunks retrieved from the vector database.
+Answers are generated using document chunks retrieved from the vector database.
 
 ---
 
-## 8. Performance and Resource Management
+## Performance & Resource Management
 
-The project is designed to operate on a machine with limited hardware resources and no dedicated GPU.
+mypdfrag is designed to operate on machines with limited hardware resources and no dedicated GPU.
 
 ### Resource Optimization
 
-The following principles are used to limit resource consumption:
+The following principles help limit resource consumption:
 
-- Use of a small language model.
-
+- Small language model.
 - Separate embedding and generation models.
-
 - One loaded model at a time.
-
 - Context length limited to 2,048 tokens.
-
 - Single parallel request.
-
 - Model unloading after use.
 
 Actual performance depends on CPU capabilities, document size, retrieved context, and database volume.
 
-### Debugging and Performance Monitoring
+### Debugging & Performance Monitoring
 
 Performance measurements are available in `app/api.py` through the `DEBUG` configuration variable.
 
@@ -387,14 +373,11 @@ Enable diagnostic output:
 DEBUG = True
 ```
 
-This displays the execution time of each processing step:
+This displays execution times for:
 
 - Embedding generation.
-
 - ChromaDB retrieval.
-
 - Text generation.
-
 - Total response time.
 
 Disable diagnostic output:
@@ -405,42 +388,39 @@ DEBUG = False
 
 ---
 
-## 9. Current Limitations
+## Current Limitations
 
-This project is currently a lightweight Retrieval-Augmented Generation proof of concept (POC).
+mypdfrag is currently a lightweight Retrieval-Augmented Generation proof of concept (POC).
 
-### Known Limitations
+Known limitations:
 
 - Text generation is relatively slow because inference runs entirely on the CPU.
-
 - Broad questions requiring comprehensive document summaries may exceed the capabilities of the current retrieval strategy.
-
 - The number of retrieved chunks is currently fixed at 3.
-
 - Long answers may require a higher generation token limit.
-
 - Answer quality depends on the relevance and coverage of retrieved document chunks.
-
 - No conversation history.
 
 ---
-## 10. Privacy and Security
 
-mypdfrag is designed with a local-first approach.
+## Privacy & Security
 
-Documents, embeddings, and user queries are processed locally.
+mypdfrag follows a local-first approach.
 
-After downloading the models and installing the dependencies, no external LLM API is required to operate the application.
-
-The FastAPI server listens on `127.0.0.1` by default, limiting its exposure to the local machine.
+- Documents are processed locally.
+- Embeddings are generated locally.
+- User queries are processed locally.
+- No external LLM API is required after downloading the models and installing dependencies.
+- The FastAPI server listens on `127.0.0.1` by default, limiting exposure to the local machine.
 
 This architecture provides greater control over document processing and avoids sending document content to external LLM providers.
 
 ---
 
-## 11. License
+## License
 
-Personal experimental project.\
+Personal experimental project.
+
 Attribution is appreciated and helps support the original project and its development.
 
-The licenses of the Ollama models and third-party dependencies remain applicable independently of this project's license.
+The licenses of Ollama models and third-party dependencies remain applicable independently of this project's license.
