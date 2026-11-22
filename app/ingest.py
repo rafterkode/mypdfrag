@@ -1,6 +1,7 @@
 ## Ingest documents on database
 import hashlib
 import os
+from typing import Any
 
 import chromadb
 import pymupdf
@@ -14,9 +15,9 @@ client = chromadb.PersistentClient(path="./database")
 collection = client.get_or_create_collection(name="documents")
 
 
-def extract_chunks(pdf_path):
+def extract_chunks(pdf_path: str) -> list[dict[str, Any]]:
     document = pymupdf.open(pdf_path)
-    document_chunks = []
+    document_chunks: list[dict[str, Any]] = []
 
     for page_number, page in enumerate(document):
         page_text = page.get_text("text")
@@ -42,7 +43,7 @@ def extract_chunks(pdf_path):
     return document_chunks
 
 
-def generate_embedding(text):
+def generate_embedding(text: str) -> list[float]:
     response = requests.post(
         f"{OLLAMA_URL}/api/embed",
         json={"model": EMBED_MODEL, "input": text, "keep_alive": "5m"},
@@ -54,7 +55,7 @@ def generate_embedding(text):
     return response.json()["embeddings"][0]
 
 
-def index_pdf(pdf_path):
+def index_pdf(pdf_path: str) -> None:
     document_chunks = extract_chunks(pdf_path)
 
     for chunk_index, chunk in enumerate(document_chunks):

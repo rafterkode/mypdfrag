@@ -1,12 +1,13 @@
 ## API for request on database
 import time
+from typing import Any
 
 import chromadb
 import requests
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-app = FastAPI(title="Local RAG API")
+app = FastAPI(title="MyPDFRag API")
 
 OLLAMA_URL = "http://localhost:11434"
 LLM_MODEL = "qwen2.5:1.5b"
@@ -23,7 +24,7 @@ class Question(BaseModel):
     question: str
 
 
-def generate_embedding(text):
+def generate_embedding(text: str) -> list[float]:
     response = requests.post(
         f"{OLLAMA_URL}/api/embed",
         json={"model": EMBED_MODEL, "input": text, "keep_alive": "5m"},
@@ -35,7 +36,7 @@ def generate_embedding(text):
 
 
 @app.post("/ask")
-def ask(data: Question):
+def ask(data: Question) -> dict[str, Any]:
 
     start_time = time.perf_counter()
 
