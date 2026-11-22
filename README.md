@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/images/mypdfrag.png" width="180" alt="mypdfrag logo">
+![mypdfrag](assets/images/mypdfrag.png)
 
 # mypdfrag
 
@@ -8,9 +8,6 @@
 
 [![Tests](https://github.com/rafterkode/mypdfrag/actions/workflows/tests.yml/badge.svg)](https://github.com/rafterkode/mypdfrag/actions/workflows/tests.yml)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-005571?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![Ollama](https://img.shields.io/badge/Ollama-Local%20LLM-black?logo=ollama&logoColor=white)](https://ollama.com/)
-[![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector%20Database-orange)](https://www.trychroma.com/)
 [![Platform](https://img.shields.io/badge/Platform-Linux-lightgrey?logo=linux&logoColor=black)](https://www.linux.org/)
 [![GitHub last commit](https://img.shields.io/github/last-commit/rafterkode/mypdfrag)](https://github.com/rafterkode/mypdfrag/commits/main)
 
@@ -73,28 +70,47 @@ mypdfrag uses a straightforward Retrieval-Augmented Generation pipeline.
 
 ### RAG Pipeline
 
-```mermaid
-flowchart TB
-    subgraph INGESTION["DOCUMENT INGESTION"]
-        PDF["PDF Documents"] --> EXTRACT["Text Extraction<br/>PyMuPDF"]
-        EXTRACT --> CHUNK["Text Chunking"]
-        CHUNK --> EMBED["Embedding Generation<br/>EmbeddingGemma"]
-        EMBED --> DB[("ChromaDB<br/>Vector Database")]
-    end
+```text
+             DOCUMENT INGESTION
+             ──────────────────
 
-    subgraph QUERY["QUESTION & ANSWER"]
-        USER["User Question"] --> QEMBED["Question Embedding"]
-        QEMBED --> SEARCH["Semantic Search"]
-        DB --> SEARCH
-        SEARCH --> CONTEXT["Relevant Context"]
-        CONTEXT --> LLM["Ollama / Qwen 2.5"]
-        LLM --> ANSWER["Generated Answer"]
-        ANSWER --> SOURCES["Answer + Source References"]
-    end
+  PDF Documents
+       │
+       ▼
+  Text Extraction (PyMuPDF)
+       │
+       ▼
+  Text Chunking
+       │
+       ▼
+  Embeddings (EmbeddingGemma)
+       │
+       ▼
+  ChromaDB (Vector Database)
 
-    style DB fill:#2563eb,color:#fff,stroke:#1d4ed8
-    style LLM fill:#7c3aed,color:#fff,stroke:#6d28d9
-    style SOURCES fill:#15803d,color:#fff,stroke:#166534
+
+             QUESTION & ANSWER
+             ─────────────────
+
+  User Question
+       │
+       ▼
+  Question Embedding
+       │
+       ▼
+  Semantic Search ◄──── ChromaDB
+       │
+       ▼
+  Relevant Context
+       │
+       ▼
+  Ollama (Qwen 2.5)
+       │
+       ▼
+  Generated Answer
+       │
+       ▼
+  Answer + Source References
 ```
 
 ### Main Components
