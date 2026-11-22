@@ -27,13 +27,13 @@ jobs:
           pip install -r requirements-dev.txt
 
       - name: Run Ruff
-        run: ruff check .
+        run: ruff check app/
 
       - name: Check formatting with Black
-        run: black --check .
+        run: black --check app/
 
       - name: Run Mypy
-        run: mypy src/
+        run: mypy --strict app/
 
       - name: Run tests
-        run: pytest --cov=src --cov-report=term-missing
+        run: pytest --cov=app --cov-report=term-missing --cov-fail-under=80
