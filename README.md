@@ -6,7 +6,7 @@
 
 ### Local-first PDF Intelligence. Simple, Lightweight, Private.
 
-[![Tests](https://github.com/rafterkode/mypdfrag/actions/workflows/tests.yml/badge.svg)](https://github.com/rafterkode/mypdfrag/actions/workflows/tests.yml)
+[![Tests](https://github.com/rafterkode/mypdfrag/actions/workflows/tests.yml/badge.svg)](https://github.com/rafterkode/mypdfrag/actions/workflows/test.yml)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Platform](https://img.shields.io/badge/Platform-Linux-lightgrey?logo=linux&logoColor=black)](https://www.linux.org/)
 [![GitHub last commit](https://img.shields.io/github/last-commit/rafterkode/mypdfrag)](https://github.com/rafterkode/mypdfrag/commits/main)
