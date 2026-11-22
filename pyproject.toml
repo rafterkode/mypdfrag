@@ -1,0 +1,30 @@
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+pythonpath = ["."]  
+python_functions = ["test_*"]
+addopts = "-v -ra"
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+
+[tool.mypy]
+python_version = "3.11"
+check_untyped_defs = true
+warn_unused_configs = true
+ignore_missing_imports = true
+strict = true
+
+[[tool.mypy.overrides]]
+module = ["chromadb.*", "pymupdf.*"]
+ignore_errors = true
+follow_imports = "skip"  
