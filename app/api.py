@@ -1,6 +1,6 @@
 ## API for request on database
 import time
-from typing import Any
+from typing import Any, cast
 
 import chromadb
 import requests
@@ -32,7 +32,7 @@ def generate_embedding(text: str) -> list[float]:
     )
 
     response.raise_for_status()
-    return response.json()["embeddings"][0]
+    return cast(list[float], response.json()["embeddings"][0])
 
 
 @app.post("/ask")

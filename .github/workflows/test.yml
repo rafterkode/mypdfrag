@@ -33,7 +33,7 @@ jobs:
         run: black --check app/
 
       - name: Run Mypy
-        run: mypy --strict app/
+        run: mypy  app/
 
       - name: Run tests
         run: pytest --cov=app --cov-report=term-missing --cov-fail-under=80

@@ -1,7 +1,7 @@
 ## Ingest documents on database
 import hashlib
 import os
-from typing import Any
+from typing import Any, cast
 
 import chromadb
 import pymupdf
@@ -22,7 +22,6 @@ def extract_chunks(pdf_path: str) -> list[dict[str, Any]]:
     for page_number, page in enumerate(document):
         page_text = page.get_text("text")
 
-        # Split text into overlapping chunks
         chunk_size = 1500
         chunk_overlap = 250
 
@@ -52,7 +51,7 @@ def generate_embedding(text: str) -> list[float]:
 
     response.raise_for_status()
 
-    return response.json()["embeddings"][0]
+    return cast(list[float], response.json()["embeddings"][0])
 
 
 def index_pdf(pdf_path: str) -> None:
