@@ -266,6 +266,25 @@ mypdfrag/
 | `tests/` | Automated tests |
 | `requirements.txt` | Python dependencies |
 
+
+Core Configuration and Retrieval
+app/core/config.py: Centralizes application settings, including Ollama models, database paths, retrieval parameters, timeouts, and generation options. Supports environment-based configuration through .env.
+app/retrieval/vector_store.py: Initializes and manages the persistent ChromaDB connection and provides access to the document collection.
+app/retrieval/embeddings.py: Handles text embedding generation through the Ollama API, providing a shared embedding function for document indexing and semantic search.
+PDF Ingestion
+app/ingestion/pdf.py: Extracts text from PDF documents and splits it into configurable chunks while preserving page numbers and source filenames. Includes basic PDF validation and password protection checks.
+app/ingestion/pipeline.py: Orchestrates document indexing by generating embeddings, storing chunks and metadata in ChromaDB, and removing obsolete chunks when a document is updated.
+PDF Extraction and Semantic-Aware Chunking
+app/ingestion/pdf.py: Extracts structured text blocks from PDF pages and groups them into overlapping chunks using paragraph and sentence boundaries. Preserves document source information and page numbers while handling oversized sentences.
+app/services/ollama.py
+	
+
+Nouveau service centralisant les communications avec Ollama : génération, chat, disponibilité du serveur et récupération des modèles.
+
+app/services/rag.py
+	
+
+Nouveau service orchestrant la recherche sémantique, la construction du contexte documentaire et la génération des réponses avec les sources.
 ---
 
 ## Usage
